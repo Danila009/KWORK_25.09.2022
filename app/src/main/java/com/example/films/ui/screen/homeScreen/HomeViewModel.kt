@@ -18,9 +18,12 @@ class HomeViewModel @Inject constructor(
     private val moviesRepository: MoviesRepository
 ):ViewModel() {
 
-    fun getMovies(): Flow<PagingData<MovieItem>> {
+    fun getMovies(
+        query:String?
+    ): Flow<PagingData<MovieItem>> {
         return Pager(PagingConfig(pageSize = 20)){
             MoviesPagingSource(
+                query = query,
                 moviesRepository = moviesRepository
             )
         }.flow.cachedIn(viewModelScope)

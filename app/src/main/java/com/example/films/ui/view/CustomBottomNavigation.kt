@@ -11,6 +11,7 @@ import androidx.compose.material.Icon
 import androidx.compose.material.Text
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.Home
+import androidx.compose.material.icons.outlined.Person
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -22,6 +23,7 @@ import androidx.navigation.NavController
 import com.example.films.ui.screen.Screen
 import com.example.films.ui.theme.primaryBackground
 import com.example.films.ui.theme.primaryText
+import com.example.films.ui.theme.secondaryBackground
 import com.example.films.ui.theme.tintColor
 
 @ExperimentalAnimationApi
@@ -29,7 +31,7 @@ import com.example.films.ui.theme.tintColor
 fun CustomBottomNavigation(
     navController:NavController,
     currentScreenId:String,
-    backgroundColor:Color = primaryBackground,
+    backgroundColor:Color = secondaryBackground,
     onItemSelected:(ScreenBottomNavigation)->Unit
 ) {
 
@@ -55,6 +57,7 @@ fun CustomBottomNavigation(
 
                 when(item){
                     ScreenBottomNavigation.Home -> navController.navigate(Screen.HomeScreen.route)
+                    ScreenBottomNavigation.Profile -> navController.navigate(Screen.ProfileScreen.route)
                 }
             }
         }
@@ -70,7 +73,7 @@ private fun CustomBottomNavigationItem(
 ){
 
     val background = if (isSelected) tintColor.copy(alpha = 0.1f) else Color.Transparent
-    val contentColor = if (isSelected) tintColor else primaryText
+    val contentColor = if (isSelected) tintColor else primaryText()
 
     Box(
         modifier = Modifier
@@ -108,10 +111,11 @@ sealed class ScreenBottomNavigation(
     val icon: ImageVector,
 ){
     object Home:ScreenBottomNavigation(Screen.HomeScreen.route,"Home", Icons.Outlined.Home)
+    object Profile:ScreenBottomNavigation(Screen.ProfileScreen.route,"Profile", Icons.Outlined.Person)
 
     object Items{
         val list= listOf(
-            Home
+            Home,Profile
         )
     }
 

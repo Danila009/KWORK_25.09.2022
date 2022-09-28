@@ -16,13 +16,13 @@ class MoviesModule {
 
     @[Provides Singleton]
     fun providerMoviesApi(
-        retrofit: Retrofit
+       @MoviesRetrofit retrofit: Retrofit
     ): MoviesApi = retrofit.create()
 
     @[Provides Singleton]
     fun providerMoviesRepository(
         moviesApi: MoviesApi
-    ): MoviesRepository = MoviesRepository(
-        api = moviesApi
+    ):MoviesRepository = MoviesRepository(
+        moviesApi = moviesApi
     )
 }

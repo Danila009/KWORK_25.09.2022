@@ -6,7 +6,8 @@ import com.example.films.data.network.model.MovieItem
 import com.example.films.data.network.movies.repository.MoviesRepository
 
 class MoviesPagingSource(
-    private val moviesRepository: MoviesRepository
+    private val moviesRepository: MoviesRepository,
+    private val query:String?
 ):PagingSource<Int,MovieItem>() {
     override fun getRefreshKey(state: PagingState<Int, MovieItem>): Int? {
         return state.anchorPosition
@@ -14,9 +15,10 @@ class MoviesPagingSource(
 
     override suspend fun load(params: LoadParams<Int>): LoadResult<Int, MovieItem> {
         return try {
-            val nextPage = params.key ?: 0
+            val nextPage = params.key ?: 1
 
             val data = moviesRepository.getMovies(
+                query = query,
                 pageSize = 20,
                 page = nextPage
             ).data
