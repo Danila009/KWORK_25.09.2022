@@ -3,6 +3,8 @@ package com.example.films.ui.screen
 sealed class Screen(val route:String) {
     object HomeScreen:Screen("home_screen")
     object ProfileScreen:Screen("profile_screen")
+    object CreateAdvertising:Screen("create_advertising_screen")
+    object AddAdminScreen:Screen("add_admin_screen")
     object WatchMovieScreen:Screen("watch_movie_screen?url={url}"){
         fun arguments(
             url:String

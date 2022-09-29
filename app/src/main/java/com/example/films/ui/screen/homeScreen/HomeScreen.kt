@@ -1,14 +1,21 @@
+@file:OptIn(ExperimentalMaterialApi::class)
+
 package com.example.films.ui.screen.homeScreen
 
+import android.annotation.SuppressLint
+import android.content.Intent
+import android.net.Uri
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.rememberLazyListState
+import androidx.compose.foundation.shape.AbsoluteRoundedCornerShape
 import androidx.compose.material.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
@@ -17,21 +24,30 @@ import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
-import androidx.paging.compose.items
+import androidx.paging.compose.itemsIndexed
+import com.example.films.data.network.model.Advertising
+import com.example.films.data.network.model.User
 import com.example.films.ui.screen.Screen
 import com.example.films.ui.theme.primaryBackground
 import com.example.films.ui.theme.primaryText
+import com.example.films.ui.theme.secondaryBackground
 import com.example.films.ui.theme.tintColor
+import com.example.films.ui.view.Image
 import com.example.films.ui.view.OnLifecycleEvent
 import com.example.films.ui.view.TextFieldSearch
+import com.example.films.utils.extensions.launchWhenStarted
+import kotlinx.coroutines.flow.onEach
 
 private var lazyListPosition = 0
 
+@SuppressLint("FlowOperatorInvokedInComposition")
 @Composable
 fun HomeScreen(
     navController: NavController,
     viewModel: HomeViewModel = hiltViewModel()
 ) {
+    val context = LocalContext.current
+
     val focusManager = LocalFocusManager.current
 
     val screenWidthDp = LocalConfiguration.current.screenWidthDp.dp
@@ -39,11 +55,27 @@ fun HomeScreen(
 
     var searchText by remember { mutableStateOf("") }
 
+    var advertising by remember { mutableStateOf<Advertising?>(null) }
+    var user by remember { mutableStateOf<User?>(null) }
+
     val movies = viewModel.getMovies(
         query = searchText.ifEmpty { null }
     ).collectAsLazyPagingItems()
 
     val lazyListState = rememberLazyListState()
+
+    viewModel.responseUser.onEach { result ->
+        user = result
+    }.launchWhenStarted()
+
+    viewModel.responseAdvertising.onEach { result ->
+        advertising = result
+    }.launchWhenStarted()
+
+    LaunchedEffect(key1 = Unit, block = {
+        viewModel.getUser()
+        viewModel.getAdvertising()
+    })
 
     LaunchedEffect(key1 = movies, block = {
         if (
@@ -103,8 +135,49 @@ fun HomeScreen(
                     }
                 }
 
-                items(movies){ item ->
-                    item ?: return@items
+                itemsIndexed(movies){ index,item ->
+                    item ?: return@itemsIndexed
+
+                    if ((index % 10) == 0 && user?.subscription == false){
+                        if (advertising?.imageUrl == null){
+                            Card(
+                                modifier = Modifier.padding(5.dp),
+                                shape = AbsoluteRoundedCornerShape(10.dp),
+                                backgroundColor = secondaryBackground,
+                                onClick = {
+                                    context.startActivity(
+                                        Intent(
+                                            Intent.ACTION_VIEW,
+                                            Uri.parse(advertising?.webUrl)
+                                        )
+                                    )
+                                }
+                            ) {
+                                Text(
+                                    text = advertising?.title ?: "",
+                                    modifier = Modifier.padding(10.dp),
+                                    color = primaryText()
+                                )
+                            }
+                        }else {
+                            Image(
+                                url = advertising?.imageUrl,
+                                progressIndicator = false,
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .heightIn(max = 150.dp)
+                                    .padding(5.dp)
+                                    .clickable {
+                                        context.startActivity(
+                                            Intent(
+                                                Intent.ACTION_VIEW,
+                                                Uri.parse(advertising?.webUrl)
+                                            )
+                                        )
+                                    }
+                            )
+                        }
+                    }
 
                     Column(
                         modifier = Modifier.clickable {

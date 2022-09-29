@@ -18,6 +18,8 @@ import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.films.ui.screen.filmInfoScreen.FilmInfoScreen
 import com.example.films.ui.screen.Screen
+import com.example.films.ui.screen.addAdminScreen.AddAdminScreen
+import com.example.films.ui.screen.createAdvertisingScreen.CreateAdvertisingScreen
 import com.example.films.ui.screen.homeScreen.HomeScreen
 import com.example.films.ui.screen.profileScreen.ProfileScreen
 import com.example.films.ui.screen.watchMovieScreen.WatchMovieScreen
@@ -77,6 +79,18 @@ fun BaseNavHost(
                     WatchMovieScreen(
                         navComposable = navHostController,
                         url = it.arguments!!.getString("url","")
+                    )
+                }
+
+                composable(Screen.CreateAdvertising.route){
+                    CreateAdvertisingScreen(
+                        navController = navHostController
+                    )
+                }
+
+                composable(Screen.AddAdminScreen.route){
+                    AddAdminScreen(
+                        navController = navHostController
                     )
                 }
 

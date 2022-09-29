@@ -1,5 +1,6 @@
 package com.example.films.di
 
+import com.example.films.data.database.user.UserDataSource
 import com.google.gson.Gson
 import com.google.gson.GsonBuilder
 import dagger.Module
@@ -21,9 +22,23 @@ annotation class KinopoiskRetrofit
 @Retention(AnnotationRetention.RUNTIME)
 annotation class MoviesRetrofit
 
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class MainRetrofit
+
 @Module
 @InstallIn(SingletonComponent::class)
 class RetrofitModule {
+
+    @[Provides Singleton MainRetrofit]
+    fun providerRetrofitMain(
+        @MainRetrofit okttpClient:OkHttpClient,
+        gson: Gson
+    ):Retrofit = Retrofit.Builder()
+        .baseUrl("http://10.0.2.2:5000")
+        .client(okttpClient)
+        .addConverterFactory(GsonConverterFactory.create(gson))
+        .build()
 
     @[Provides Singleton MoviesRetrofit]
     fun providerRetrofit(
@@ -65,6 +80,19 @@ class RetrofitModule {
             val request = it.request()
                 .newBuilder()
                 .addHeader("X-API-KEY","ab67ce7d-90cf-4d1b-b354-7474b82c9f38")
+                .build()
+            it.proceed(request = request)
+        }
+        .build()
+
+    @[Provides Singleton MainRetrofit]
+    fun providerOkHttpClientMain(
+        userDataSource: UserDataSource
+    ):OkHttpClient = OkHttpClient.Builder()
+        .addInterceptor {
+            val request = it.request()
+                .newBuilder()
+                .addHeader("Authorization","Bearer ${userDataSource.getToken()}")
                 .build()
             it.proceed(request = request)
         }
