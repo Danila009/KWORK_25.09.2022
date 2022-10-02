@@ -18,11 +18,9 @@ import androidx.hilt.navigation.compose.hiltViewModel
 import androidx.navigation.NavController
 import com.example.films.data.network.model.MovieInfo
 import com.example.films.data.network.model.MovieItem
-import com.example.films.data.network.model.MovieMedia
 import com.example.films.data.network.utils.Result
 import com.example.films.ui.screen.Screen
 import com.example.films.ui.screen.filmInfoScreen.view.MovieMediaAlertDialog
-import com.example.films.ui.screen.filmInfoScreen.view.MovieQualitiesAlertDialog
 import com.example.films.ui.theme.primaryBackground
 import com.example.films.ui.theme.primaryText
 import com.example.films.ui.theme.tintColor
@@ -30,7 +28,8 @@ import com.example.films.ui.view.Image
 import com.example.films.utils.extensions.launchWhenStarted
 import kotlinx.coroutines.flow.onEach
 
-@SuppressLint("FlowOperatorInvokedInComposition")
+
+@SuppressLint("FlowOperatorInvokedInComposition", "ObsoleteSdkInt")
 @Composable
 fun FilmInfoScreen(
     navController: NavController,
@@ -46,7 +45,6 @@ fun FilmInfoScreen(
     var movie by remember { mutableStateOf<MovieItem?>(null) }
 
     var movieMediaAlertDialog by remember { mutableStateOf(false) }
-    var movieQualitiesAlertDialog by remember { mutableStateOf<MovieMedia?>(null) }
 
     viewModel.responseMovieInfo.onEach { result ->
         moviesInfoResult = result
@@ -77,127 +75,164 @@ fun FilmInfoScreen(
                     },
                     onClickTranslation = {
                         movieMediaAlertDialog = false
-                        movieQualitiesAlertDialog = it
+                        navController.navigate(
+                            Screen.WatchMovieScreen.arguments(
+                                url = "https:" + it.path
+                            )
+                        )
                     }
                 )
             }
         }
 
-        if (movieQualitiesAlertDialog != null){
-            MovieQualitiesAlertDialog(
-                qualities = movieQualitiesAlertDialog!!.qualities,
-                onClickQualities = {
-                    movieQualitiesAlertDialog = null
-                    navController.navigate(
-                        Screen.WatchMovieScreen.arguments(
-                            url = "https:" + it.url
-                        )
-                    )
-                },
-                onDismissRequest = {
-                    movieQualitiesAlertDialog = null
-                }
-            )
-        }
-
         LazyColumn {
-            when(moviesInfoResult){
-                is Result.Error -> item {
-                    Text(
-                        text = "Error: ${moviesInfoResult.message}",
-                        color = Color.Red,
-                        modifier = Modifier.padding(10.dp)
-                    )
-                }
-                is Result.Loading -> item {
-                    Column(
-                        modifier = Modifier.size(
-                            width = screenWidthDp,
-                            height = screenHeightDp
-                        ),
-                        horizontalAlignment = Alignment.CenterHorizontally,
-                        verticalArrangement = Arrangement.Center
+            if (moviesInfoResult is Result.Error && movie != null){
+                item {
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        CircularProgressIndicator(
-                            color = tintColor
-                        )
+                        Column {
+                            Text(
+                                text = (movie?.ru_title ?: "") +
+                                        ", " + (movie?.kinopoisk_id ?: "") +
+                                        ", " + (movie?.year ?: ""),
+                                modifier = Modifier.padding(start = 10.dp,top = 10.dp),
+                                fontWeight = FontWeight.W900,
+                                color = primaryText()
+                            )
+
+                            Text(
+                                text = movie?.orig_title ?: "",
+                                modifier = Modifier.padding(start = 10.dp, bottom = 10.dp),
+                                fontWeight = FontWeight.W100,
+                                color = primaryText()
+                            )
+                        }
+
+                        Button(
+                            modifier = Modifier.padding(10.dp),
+                            shape = AbsoluteRoundedCornerShape(15.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                backgroundColor = primaryBackground
+                            ),
+                            onClick = {
+                                movieMediaAlertDialog = true
+                            }
+                        ) {
+                            Text(
+                                text = "Смотреть",
+                                color = primaryText()
+                            )
+                        }
                     }
                 }
-                is Result.Success -> {
-                    item {
-                        val moviesInfo = moviesInfoResult.data ?: return@item
-
-                        Image(
-                            url = moviesInfo.coverUrl ?: moviesInfo.logoUrl,
-                            progressIndicator = false,
-                            modifier = Modifier
-                                .fillMaxSize()
-                                .heightIn(max = 300.dp)
+            }else {
+                when(moviesInfoResult){
+                    is Result.Error -> item {
+                        Text(
+                            text = "Error: ${moviesInfoResult.message}",
+                            color = Color.Red,
+                            modifier = Modifier.padding(10.dp)
                         )
-
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                    }
+                    is Result.Loading -> item {
+                        Column(
+                            modifier = Modifier.size(
+                                width = screenWidthDp,
+                                height = screenHeightDp
+                            ),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
                         ) {
-                            Column {
-                                Text(
-                                    text = moviesInfo.nameRu + ", " + moviesInfo.ratingKinopoisk.toString() + ", " + moviesInfo.year.toString(),
-                                    modifier = Modifier.padding(start = 10.dp,top = 10.dp),
-                                    fontWeight = FontWeight.W900,
-                                    color = primaryText()
-                                )
+                            CircularProgressIndicator(
+                                color = tintColor
+                            )
+                        }
+                    }
+                    is Result.Success -> {
+                        item {
+                            val moviesInfo = moviesInfoResult.data ?: return@item
 
-                                Text(
-                                    text = moviesInfo.nameEn ?: moviesInfo.nameOriginal ?: "",
-                                    modifier = Modifier.padding(start = 10.dp, bottom = 10.dp),
-                                    fontWeight = FontWeight.W100,
-                                    color = primaryText()
-                                )
-                            }
+                            Image(
+                                url = moviesInfo.coverUrl ?: moviesInfo.logoUrl,
+                                progressIndicator = false,
+                                modifier = Modifier
+                                    .fillMaxSize()
+                                    .heightIn(max = 400.dp)
+                                    .padding(
+                                        WindowInsets.systemBars
+                                            .only(WindowInsetsSides.Horizontal + WindowInsetsSides.Top)
+                                            .asPaddingValues()
+                                    )
+                            )
 
-                            movie?.let {
-                                Button(
-                                    modifier = Modifier.padding(10.dp),
-                                    shape = AbsoluteRoundedCornerShape(15.dp),
-                                    colors = ButtonDefaults.buttonColors(
-                                        backgroundColor = primaryBackground
-                                    ),
-                                    onClick = {
-                                        movieMediaAlertDialog = true
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceBetween
+                            ) {
+                                Column {
+                                    Text(
+                                        text = moviesInfo.nameRu +
+                                                ", " + moviesInfo.ratingKinopoisk.toString() +
+                                                ", " + moviesInfo.year.toString(),
+                                        modifier = Modifier.padding(start = 10.dp,top = 10.dp),
+                                        fontWeight = FontWeight.W900,
+                                        color = primaryText()
+                                    )
+
+                                    Text(
+                                        text = moviesInfo.nameEn ?: moviesInfo.nameOriginal ?: "",
+                                        modifier = Modifier.padding(start = 10.dp, bottom = 10.dp),
+                                        fontWeight = FontWeight.W100,
+                                        color = primaryText()
+                                    )
+                                }
+
+                                movie?.let {
+                                    Button(
+                                        modifier = Modifier.padding(10.dp),
+                                        shape = AbsoluteRoundedCornerShape(15.dp),
+                                        colors = ButtonDefaults.buttonColors(
+                                            backgroundColor = primaryBackground
+                                        ),
+                                        onClick = {
+                                            movieMediaAlertDialog = true
+                                        }
+                                    ) {
+                                        Text(text = "Смотреть",
+                                            color = primaryText())
                                     }
-                                ) {
-                                    Text(text = "Смотреть",
-                                        color = primaryText())
                                 }
                             }
-                        }
 
-                        LazyRow {
-                            items(moviesInfo.countries){ countrie ->
-                                Text(
-                                    text = countrie.country,
-                                    modifier = Modifier.padding(5.dp),
-                                    color = primaryText()
-                                )
+                            LazyRow {
+                                items(moviesInfo.countries){ countrie ->
+                                    Text(
+                                        text = countrie.country,
+                                        modifier = Modifier.padding(5.dp),
+                                        color = primaryText()
+                                    )
+                                }
                             }
-                        }
 
-                        LazyRow {
-                            items(moviesInfo.genres){ genre ->
-                                Text(
-                                    text = genre.genre,
-                                    modifier = Modifier.padding(5.dp),
-                                    color = primaryText()
-                                )
+                            LazyRow {
+                                items(moviesInfo.genres){ genre ->
+                                    Text(
+                                        text = genre.genre,
+                                        modifier = Modifier.padding(5.dp),
+                                        color = primaryText()
+                                    )
+                                }
                             }
-                        }
 
-                        Text(
-                            text = moviesInfo.description ?: moviesInfo.shortDescription,
-                            modifier = Modifier.padding(10.dp),
-                            fontWeight = FontWeight.W100,
-                            color = primaryText()
-                        )
+                            Text(
+                                text = moviesInfo.description ?: moviesInfo.shortDescription,
+                                modifier = Modifier.padding(10.dp),
+                                fontWeight = FontWeight.W100,
+                                color = primaryText()
+                            )
+                        }
                     }
                 }
             }

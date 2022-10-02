@@ -1,5 +1,6 @@
 package com.example.films.ui.screen.profileScreen
 
+import android.annotation.SuppressLint
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyListScope
 import androidx.compose.foundation.shape.AbsoluteRoundedCornerShape
@@ -10,6 +11,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
@@ -24,6 +26,7 @@ import com.example.films.ui.view.TextFieldPassword
 import com.example.films.utils.extensions.launchWhenStarted
 import kotlinx.coroutines.flow.onEach
 
+@SuppressLint("FlowOperatorInvokedInComposition")
 fun LazyListScope.authView(
     navController: NavController,
     viewModel: ProfileViewModel
@@ -38,13 +41,24 @@ fun LazyListScope.authView(
 
         viewModel.responseRegistrationResponse.onEach { result ->
             when(result){
-                is Result.Error -> error = result.message ?: ""
-                is Result.Loading -> error = "Loading..."
+                is Result.Error -> {
+                    viewModel.authorizationClear()
+                    error = result.message ?: ""
+                }
+                is Result.Loading -> {
+                    viewModel.authorizationClear()
+                    error = "Loading..."
+                }
                 is Result.Success -> {
-                    viewModel.authorization(body = AuthorizationBody(
-                        login = login,
-                        password = password
-                    ))
+                    viewModel.authorizationClear()
+                    if (result.data?.error == null){
+                        viewModel.authorization(body = AuthorizationBody(
+                            login = login,
+                            password = password
+                        ))
+                    }else {
+                        error = result.data.error
+                    }
                 }
                 null -> Unit
             }
@@ -52,9 +66,16 @@ fun LazyListScope.authView(
 
         viewModel.responseAuthorizationResponse.onEach { result ->
             when(result){
-                is Result.Error -> error = result.message ?: ""
-                is Result.Loading -> error = "Loading..."
+                is Result.Error -> {
+                    viewModel.registrationClear()
+                    error = result.message ?: ""
+                }
+                is Result.Loading -> {
+                    viewModel.registrationClear()
+                    error = "Loading..."
+                }
                 is Result.Success -> {
+                    viewModel.registrationClear()
                     viewModel.saveToken(result.data?.access_token)
                     viewModel.savePassword(password)
                     viewModel.saveLogin(login)
@@ -70,7 +91,8 @@ fun LazyListScope.authView(
             color = Color.Red,
             fontWeight = FontWeight.W900,
             fontSize = 20.sp,
-            modifier = Modifier.padding(5.dp)
+            modifier = Modifier.padding(5.dp),
+            textAlign = TextAlign.Center
         )
 
         TextFieldBase(

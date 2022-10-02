@@ -20,7 +20,6 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.hilt.navigation.compose.hiltViewModel
-import androidx.lifecycle.Lifecycle
 import androidx.navigation.NavController
 import androidx.paging.LoadState
 import androidx.paging.compose.collectAsLazyPagingItems
@@ -33,12 +32,9 @@ import com.example.films.ui.theme.primaryText
 import com.example.films.ui.theme.secondaryBackground
 import com.example.films.ui.theme.tintColor
 import com.example.films.ui.view.Image
-import com.example.films.ui.view.OnLifecycleEvent
 import com.example.films.ui.view.TextFieldSearch
 import com.example.films.utils.extensions.launchWhenStarted
 import kotlinx.coroutines.flow.onEach
-
-private var lazyListPosition = 0
 
 @SuppressLint("FlowOperatorInvokedInComposition")
 @Composable
@@ -76,20 +72,6 @@ fun HomeScreen(
         viewModel.getUser()
         viewModel.getAdvertising()
     })
-
-    LaunchedEffect(key1 = movies, block = {
-        if (
-            movies.loadState.refresh !is LoadState.Loading
-        ) {
-            lazyListState.animateScrollToItem(lazyListPosition)
-        }
-    })
-
-    OnLifecycleEvent { owner, event ->
-        if (event == Lifecycle.Event.ON_PAUSE){
-            lazyListPosition = lazyListState.firstVisibleItemIndex
-        }
-    }
 
     Surface(
         modifier = Modifier.fillMaxSize(),

@@ -110,8 +110,8 @@ sealed class ScreenBottomNavigation(
     val title:String,
     val icon: ImageVector,
 ){
-    object Home:ScreenBottomNavigation(Screen.HomeScreen.route,"Home", Icons.Outlined.Home)
-    object Profile:ScreenBottomNavigation(Screen.ProfileScreen.route,"Profile", Icons.Outlined.Person)
+    object Home:ScreenBottomNavigation(Screen.HomeScreen.route,"Дом", Icons.Outlined.Home)
+    object Profile:ScreenBottomNavigation(Screen.ProfileScreen.route,"Пользователь", Icons.Outlined.Person)
 
     object Items{
         val list= listOf(

@@ -26,9 +26,21 @@ annotation class MoviesRetrofit
 @Retention(AnnotationRetention.RUNTIME)
 annotation class MainRetrofit
 
+@Qualifier
+@Retention(AnnotationRetention.RUNTIME)
+annotation class FreekassaOrderRetrofit
+
 @Module
 @InstallIn(SingletonComponent::class)
 class RetrofitModule {
+
+    @[Provides Singleton FreekassaOrderRetrofit]
+    fun providerRetrofitFreekassaOrder(
+        gson: Gson
+    ):Retrofit = Retrofit.Builder()
+        .baseUrl("https://api.freekassa.ru")
+        .addConverterFactory(GsonConverterFactory.create(gson))
+        .build()
 
     @[Provides Singleton MainRetrofit]
     fun providerRetrofitMain(

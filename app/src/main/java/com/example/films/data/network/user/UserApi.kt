@@ -11,7 +11,9 @@ interface UserApi {
     suspend fun getUser():Response<User>
 
     @PATCH("/api/User/Subscription")
-    suspend fun patchSubscription(subscription:Boolean)
+    suspend fun patchSubscription(
+        @Query("subscription") subscription:Boolean
+    )
 
     @POST("/api/User/{id}/Admin")
     suspend fun postAdmin(
