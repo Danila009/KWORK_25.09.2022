@@ -7,7 +7,7 @@ import retrofit2.http.Query
 
 interface FreekassaApi {
     
-    @GET("/api/Freekassa/ShopId")
+    @GET("/filmsvvvzzz/api/Freekassa/ShopId")
     suspend fun getFreekassaByShopId(
         @Query("shopId") shopId:Int
     ):Response<FreekassaData>

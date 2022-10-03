@@ -17,6 +17,7 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.Lifecycle
@@ -169,84 +170,93 @@ fun LazyListScope.userView(
                     modifier = Modifier.padding(10.dp)
                 )
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
+                Column(
+                    horizontalAlignment = Alignment.CenterHorizontally,
+                    verticalArrangement = Arrangement.Center
                 ) {
-                    if (!user.data!!.subscription){
-                        Button(
-                            modifier = Modifier.padding(5.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = tintColor
-                            ),
-                            shape = AbsoluteRoundedCornerShape(10.dp),
-                            onClick = {
-                                subscriptionMain.data ?: return@Button
-                                viewModel.getFreekassaByShopId(shopId = subscriptionMain.data!!.shopId)
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        if (!user.data!!.subscription){
+                            Button(
+                                modifier = Modifier.padding(5.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = tintColor
+                                ),
+                                shape = AbsoluteRoundedCornerShape(10.dp),
+                                onClick = {
+                                    subscriptionMain.data ?: return@Button
+                                    viewModel.getFreekassaByShopId(shopId = subscriptionMain.data!!.shopId)
+                                }
+                            ) {
+                                Text(
+                                    text = "Отключить \n реклама",
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
                             }
-                        ) {
-                            Text(
-                                text = "Отключить реклама",
-                                color = Color.White
-                            )
+                        }
+
+                        if (userRole == UserRole.ADMIN_USER){
+                            Button(
+                                modifier = Modifier.padding(5.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = tintColor
+                                ),
+                                shape = AbsoluteRoundedCornerShape(10.dp),
+                                onClick = {
+                                    navController.navigate(Screen.CreateAdvertising.route)
+                                }
+                            ) {
+                                Text(
+                                    text = "Добавить \n рекламу",
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
+                            }
                         }
                     }
 
-                    if (userRole == UserRole.ADMIN_USER){
-                        Button(
-                            modifier = Modifier.padding(5.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = tintColor
-                            ),
-                            shape = AbsoluteRoundedCornerShape(10.dp),
-                            onClick = {
-                                navController.navigate(Screen.CreateAdvertising.route)
-                            }
-                        ) {
-                            Text(
-                                text = "Добавить рекламу",
-                                color = Color.White
-                            )
-                        }
-                    }
-                }
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.SpaceEvenly
+                    ) {
+                        if (userRole == UserRole.ADMIN_USER){
 
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.SpaceAround
-                ) {
-                    if (userRole == UserRole.ADMIN_USER){
-
-                        Button(
-                            modifier = Modifier.padding(5.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = tintColor
-                            ),
-                            shape = AbsoluteRoundedCornerShape(10.dp),
-                            onClick = {
-                                navController.navigate(Screen.EditingAdvertisingScreen.route)
+                            Button(
+                                modifier = Modifier.padding(5.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = tintColor
+                                ),
+                                shape = AbsoluteRoundedCornerShape(10.dp),
+                                onClick = {
+                                    navController.navigate(Screen.EditingAdvertisingScreen.route)
+                                }
+                            ) {
+                                Text(
+                                    text = "Редактировать \n рекламу",
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
                             }
-                        ) {
-                            Text(
-                                text = "Редактировать рекламу",
-                                color = Color.White
-                            )
-                        }
 
-                        Button(
-                            modifier = Modifier.padding(5.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                backgroundColor = tintColor
-                            ),
-                            shape = AbsoluteRoundedCornerShape(10.dp),
-                            onClick = {
-                                navController.navigate(Screen.AddAdminScreen.route)
+                            Button(
+                                modifier = Modifier.padding(5.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    backgroundColor = tintColor
+                                ),
+                                shape = AbsoluteRoundedCornerShape(10.dp),
+                                onClick = {
+                                    navController.navigate(Screen.AddAdminScreen.route)
+                                }
+                            ) {
+                                Text(
+                                    text = "Добавить \n админа",
+                                    color = Color.White,
+                                    textAlign = TextAlign.Center
+                                )
                             }
-                        ) {
-                            Text(
-                                text = "Добавить админа",
-                                color = Color.White
-                            )
                         }
                     }
                 }

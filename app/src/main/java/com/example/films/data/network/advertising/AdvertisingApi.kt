@@ -9,24 +9,24 @@ import retrofit2.http.*
 
 interface AdvertisingApi {
 
-    @GET("/api/Advertising")
+    @GET("/filmsvvvzzz/api/Advertising")
     suspend fun getAdvertising():Response<List<Advertising>>
 
-    @GET("/api/Advertising/Random")
+    @GET("/filmsvvvzzz/api/Advertising/Random")
     suspend fun getAdvertisingRandom():Advertising
 
-    @POST("/api/Advertising")
+    @POST("/filmsvvvzzz/api/Advertising")
     suspend fun postAdvertising(
         @Body body:AdvertisingCreate
     ):Response<Advertising>
 
-    @DELETE("/api/Advertising/{id}")
+    @DELETE("/filmsvvvzzz/api/Advertising/{id}")
     suspend fun deleteAdvertising(
         @Path("id") id:Int
     ):Response<Unit?>
 
     @Multipart
-    @POST("/api/Advertising/{id}/Image")
+    @POST("/filmsvvvzzz/api/Advertising/{id}/Image")
     suspend fun uploadAdvertisingImage(
         @Path("id") id:Int,
         @Part file:MultipartBody.Part

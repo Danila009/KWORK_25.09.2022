@@ -6,6 +6,6 @@ import retrofit2.http.GET
 
 interface SubscriptionApi {
 
-    @GET("/api/Subscription/Main")
+    @GET("/filmsvvvzzz/api/Subscription/Main")
     suspend fun getSubscriptionMain():Response<Subscription>
 }

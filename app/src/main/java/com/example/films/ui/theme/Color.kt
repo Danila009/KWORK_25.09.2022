@@ -13,12 +13,12 @@ val Teal200 = Color(0xFF03DAC5)
 fun primaryText():Color {
     val isSystemInDarkTheme = isSystemInDarkTheme()
     return if (isSystemInDarkTheme){
-        Color(0xFF998686)
+        Color(0xFFEFECF7)
     }else {
-        Color(0xFF201D1D)
+        Color(0xFFEFECF7)
     }
 }
 
-val primaryBackground = Color(0xFFFFFFFF)
-val secondaryBackground = Color(0xFFF3F4F5)
-val tintColor = Color(0xFF00E7FC)
+val primaryBackground = Color(0xFF15191C)
+val secondaryBackground = Color(0xFF1A1B20)
+val tintColor = Color(0xFFF85B5B)

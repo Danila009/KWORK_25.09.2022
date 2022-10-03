@@ -24,6 +24,7 @@ import com.example.films.data.network.model.Advertising
 import com.example.films.data.network.utils.Result
 import com.example.films.ui.screen.Screen
 import com.example.films.ui.theme.primaryBackground
+import com.example.films.ui.theme.primaryText
 import com.example.films.ui.theme.tintColor
 import com.example.films.ui.view.Image
 import com.example.films.utils.extensions.launchWhenStarted
@@ -93,60 +94,66 @@ fun EditingAdvertisingScreen(
                 }
                 is Result.Success -> {
                     items(advertising.data ?: emptyList()){ item ->
-                        Row(
-                            modifier = Modifier.fillMaxWidth(),
-                            horizontalArrangement = Arrangement.SpaceBetween
+                        Column(
                         ) {
-                            Column {
-                                Text(
-                                    text = item.title,
-                                    fontWeight = FontWeight.W900,
-                                    modifier = Modifier.padding(5.dp)
-                                )
+                            Text(
+                                text = item.title,
+                                fontWeight = FontWeight.W900,
+                                modifier = Modifier
+                                    .padding(5.dp)
+                            )
 
-                                Text(
-                                    text = item.webUrl,
-                                    fontWeight = FontWeight.W900,
-                                    modifier = Modifier
-                                        .padding(5.dp)
-                                        .clickable {
-                                            context.startActivity(
-                                                Intent(
-                                                    Intent.ACTION_VIEW,
-                                                    Uri.parse(item.webUrl)
-                                                )
+                            Text(
+                                text = item.webUrl,
+                                fontWeight = FontWeight.W900,
+                                modifier = Modifier
+                                    .padding(5.dp)
+                                    .clickable {
+                                        context.startActivity(
+                                            Intent(
+                                                Intent.ACTION_VIEW,
+                                                Uri.parse(item.webUrl)
                                             )
-                                        }
-                                )
+                                        )
+                                    }
+                            )
 
+                            Row(
+                                modifier = Modifier.fillMaxWidth(),
+                                horizontalArrangement = Arrangement.SpaceAround,
+                                verticalAlignment = Alignment.Top
+                            ) {
                                 item.imageUrl?.let {
                                     Image(
                                         url = item.imageUrl,
                                         progressIndicator = false,
                                         modifier = Modifier
-                                            .fillMaxWidth()
+                                            .widthIn(max = 200.dp)
                                             .heightIn(max = 150.dp)
                                             .padding(5.dp)
                                     )
                                 }
-                            }
 
-                            Button(
-                                modifier = Modifier.padding(5.dp),
-                                shape = AbsoluteRoundedCornerShape(10.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    backgroundColor = primaryBackground
-                                ),
-                                onClick = {
-                                    viewModel.deleteAdvertising(id = item.id)
-                                    navController.navigate(Screen.ProfileScreen.route)
+                                Button(
+                                    modifier = Modifier.padding(5.dp),
+                                    shape = AbsoluteRoundedCornerShape(10.dp),
+                                    colors = ButtonDefaults.buttonColors(
+                                        backgroundColor = primaryBackground
+                                    ),
+                                    onClick = {
+                                        viewModel.deleteAdvertising(id = item.id)
+                                        navController.navigate(Screen.ProfileScreen.route)
+                                    }
+                                ) {
+                                    Text(
+                                        text = "Удалить",
+                                        color = primaryText()
+                                    )
                                 }
-                            ) {
-                                Text(text = "Удалить")
                             }
-                        }
 
-                        Divider()
+                            Divider()
+                        }
                     }
                 }
             }

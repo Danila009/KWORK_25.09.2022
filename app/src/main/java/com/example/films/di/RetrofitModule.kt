@@ -47,7 +47,7 @@ class RetrofitModule {
         @MainRetrofit okttpClient:OkHttpClient,
         gson: Gson
     ):Retrofit = Retrofit.Builder()
-        .baseUrl("http://10.0.2.2:5000")
+        .baseUrl("https://24filmfond.ru")
         .client(okttpClient)
         .addConverterFactory(GsonConverterFactory.create(gson))
         .build()

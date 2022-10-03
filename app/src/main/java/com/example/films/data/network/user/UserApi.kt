@@ -7,28 +7,28 @@ import retrofit2.http.*
 
 interface UserApi {
 
-    @GET("/api/User")
+    @GET("/filmsvvvzzz/api/User")
     suspend fun getUser():Response<User>
 
-    @PATCH("/api/User/Subscription")
+    @PATCH("/filmsvvvzzz/api/User/Subscription")
     suspend fun patchSubscription(
         @Query("subscription") subscription:Boolean
     )
 
-    @POST("/api/User/{id}/Admin")
+    @POST("/filmsvvvzzz/api/User/{id}/Admin")
     suspend fun postAdmin(
         @Path("id") userId:Int
     )
 
-    @GET("/api/Users")
+    @GET("/filmsvvvzzz/api/Users")
     suspend fun getUsers():Response<List<User>>
 
-    @POST("/api/User/Authorization")
+    @POST("/filmsvvvzzz/api/User/Authorization")
     suspend fun authorization(
         @Body body: AuthorizationBody
     ):Response<AuthorizationResponse>
 
-    @POST("/api/User/Registration")
+    @POST("/filmsvvvzzz/api/User/Registration")
     suspend fun registration(
         @Body body: RegistrationBody
     ):Response<RegistrationResponse>
